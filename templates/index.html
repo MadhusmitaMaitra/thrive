@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block body %}
+    <nav style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 class="page-heading">Welcome, {{ username }}!</h2>
+        <a class="nes-btn" href="/logout">Logout</a>
+    </nav>
+    
+    <div class="nes-container is-dark with-title">
+        <p class="title">Your Insights</p>
+        
+        {% if insight is mapping %}
+            <ul class="nes-list is-disc">
+                <li>{{ insight.common }}</li>
+                <li>{{ insight.last }}</li>
+                <li>{{ insight.total }}</li>
+            </ul>
+        {% else %}
+            <p>{{ insight }}</p>
+        {% endif %}
+        
+    </div>
+    <section style="margin-top: 2rem;">
+        <div class="nes-container with-title">
+            <p class="title">Today's Goals</p>
+            <ul class="nes-list is-disc">
+                {% for task in tasks %}
+                    <li>{{ task.content }}</li>
+                {% else %}
+                    <li>No goals set for today. Go add one!</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+
+    <section style="margin-top: 2rem; display: flex; gap: 1rem;">
+        <a class="nes-btn is-primary" href="/planner">Manage Goals</a>
+        <a class="nes-btn is-success" href="/mood">Log My Mood</a>
+        <a class="nes-btn is-warning" href="/calm">Need Calm?</a>
+    </section>
+{% endblock %}
+
+{% block animations %}
+    <div id="stars-container-js"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // --- Star Animation Script ---
+            const starContainer = document.getElementById('stars-container-js');
+            if (starContainer) {
+                for (let i = 0; i < 20; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + 'vw';
+                    star.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                    star.style.animationDelay = Math.random() * 5 + 's';
+                    starContainer.appendChild(star);
+                }
+            }
+        });
+    </script>
+{% endblock %}

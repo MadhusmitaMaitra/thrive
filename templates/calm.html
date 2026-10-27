@@ -1,0 +1,105 @@
+{% extends "layout.html" %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block body %}
+    <nav style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 class="page-heading">Take a Deep Breath</h2>
+        <div>
+            <a class="nes-btn" href="/">Back to Home</a>
+            <a class="nes-btn" href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="nes-container is-centered">
+        <p id="breathing-instruction">Get ready...</p>
+        
+        <div id="breathing-circle" style="
+            width: 150px; 
+            height: 150px; 
+            background-color: var(--success-color);
+            border-radius: 50%; 
+            margin: 2rem auto;
+            transform: scale(1);
+        "></div>
+        
+        <div style="margin-top: 2rem;">
+            <button id="start-btn" class="nes-btn is-primary">Start</button>
+            <button id="stop-btn" class="nes-btn is-error" style="display: none;">Stop</button>
+        </div>
+        
+    </div>
+{% endblock %}
+
+{% block animations %}
+    <div id="stars-container-js"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            
+            // --- Star Animation Script ---
+            const starContainer = document.getElementById('stars-container-js');
+            if (starContainer) {
+                for (let i = 0; i < 20; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + 'vw';
+                    star.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                    star.style.animationDelay = Math.random() * 5 + 's';
+                    starContainer.appendChild(star);
+                }
+            }
+
+            // --- Breathing Animation Script ---
+            const circle = document.getElementById('breathing-circle');
+            const instruction = document.getElementById('breathing-instruction');
+            const startBtn = document.getElementById('start-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            
+            let animationTimer; // Timer to hold the animation loop
+
+            if (startBtn) {
+                const animationCycle = [
+                    { text: "Breathe in...", scale: 1.5, duration: 4000 },
+                    { text: "Hold...", scale: 1.5, duration: 4000 },
+                    { text: "Breathe out...", scale: 1, duration: 6000 },
+                    { text: "Hold...", scale: 1, duration: 2000 }
+                ];
+                let cycleIndex = 0;
+
+                function runAnimation() {
+                    const currentStep = animationCycle[cycleIndex];
+                    instruction.textContent = currentStep.text;
+                    
+                    if(circle) {
+                        circle.style.transition = `transform ${currentStep.duration / 1000}s ease-in-out`;
+                        circle.style.transform = `scale(${currentStep.scale})`;
+                    }
+                    
+                    cycleIndex = (cycleIndex + 1) % animationCycle.length;
+                    animationTimer = setTimeout(runAnimation, currentStep.duration);
+                }
+                
+                // Start Button Click
+                startBtn.addEventListener('click', () => {
+                    startBtn.style.display = 'none';
+                    stopBtn.style.display = 'inline-block';
+                    runAnimation();
+                });
+
+                // Stop Button Click
+                stopBtn.addEventListener('click', () => {
+                    clearTimeout(animationTimer); // Stop the animation loop
+                    
+                    startBtn.style.display = 'inline-block';
+                    stopBtn.style.display = 'none';
+                    instruction.textContent = "Get ready...";
+                    if(circle) {
+                        circle.style.transition = 'transform 0.5s ease-in-out';
+                        circle.style.transform = 'scale(1)';
+                    }
+                    cycleIndex = 0;
+                });
+            }
+        });
+    </script>
+{% endblock %}

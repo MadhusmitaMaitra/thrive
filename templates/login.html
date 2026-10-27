@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+
+{% block body_class %}login-page{% endblock %}
+
+{% block body %}
+<div class="center-container">
+
+    <h2 class="app-title">Thrive</h2>
+
+    <div class="nes-container with-title is-centered">
+        <p class="title">Login</p>
+        <form action="/login" method="post">
+            <div class="nes-field">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" class="nes-input">
+            </div>
+            <div class="nes-field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" class="nes-input">
+            </div>
+            <button type="submit" class="nes-btn is-primary">Login</button>
+        </form>
+        <a href="/register">Don't have an account? Register here.</a>
+    </div>
+
+</div>
+{% endblock %}

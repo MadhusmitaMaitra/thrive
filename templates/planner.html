@@ -1,0 +1,122 @@
+{% extends "layout.html" %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block body %}
+    <nav style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 class="page-heading">My Planner</h2>
+        <div>
+            <a class="nes-btn" href="/">Back to Home</a>
+            <a class="nes-btn" href="/logout">Logout</a>
+        </div>
+    </nav>
+
+    <div class="nes-container with-title">
+        <p class="title">New Goal</p>
+        <form action="/planner" method="post">
+            <div class="nes-field">
+                <label for="task">What would you like to accomplish today?</label>
+                <input type="text" id="task" name="task" class="nes-input" placeholder="e.g., Study for 1 hour..." required>
+            </div>
+            <button type="submit" class="nes-btn is-primary" style="margin-top: 1rem;">Add Goal</button>
+        </form>
+    </div>
+
+    <section style="margin-top: 2rem;">
+        <div class="nes-container with-title">
+            <p class="title">To-Do</p>
+            {% for task in tasks if task.status == 'todo' %}
+                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem;">
+                    <p>{{ task.content }}</p>
+                    <form action="/update_task/{{ task.id }}" method="post" style="display: inline;">
+                        <button type="submit" class="nes-btn is-success">Done!</button>
+                    </form>
+                </div>
+            {% else %}
+                <p>No tasks to do. Great job!</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section style="margin-top: 2rem;">
+        <div class="nes-container with-title is-dark">
+            <p class="title">Completed</p>
+             <ul class="nes-list is-disc">
+                {% for task in tasks if task.status == 'done' %}
+                    <li>{{ task.content }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+{% endblock %}
+
+{% block animations %}
+    <div class="stars-container" id="stars-container"></div>
+
+    <dialog class="nes-dialog is-rounded" id="reward-dialog" style="z-index: 9999;">
+        <form method="dialog">
+            <p class="title" style="text-align: center;">You did it!</p>
+            
+            <div style="text-align: center; margin-bottom: 1rem;">
+                <img id="cat-photo" src="" alt="A goofy cat" style="max-width: 100%; height: auto; border: 4px solid #a7b6e2; border-radius: 8px;">
+            </div>
+            
+            <p id="cat-quote" style="text-align: center; font-style: italic; color: var(--text-color); margin-bottom: 1rem;"></p>
+
+            <menu class="dialog-menu" style="display: flex; justify-content: center;">
+                <button class="nes-btn is-primary">Meow-some!</button>
+            </menu>
+        </form>
+    </dialog>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            /* 🌟 Generate floating stars for cozy animation */
+            const starsContainer = document.getElementById("stars-container");
+            if (starsContainer) {
+                for (let i = 0; i < 30; i++) {
+                    const star = document.createElement("div");
+                    star.classList.add("star");
+                    star.style.left = Math.random() * 100 + "vw";
+                    star.style.animationDuration = (6 + Math.random() * 8) + "s";
+                    star.style.animationDelay = Math.random() * 5 + "s";
+                    starsContainer.appendChild(star);
+                }
+            }
+
+            /* 🐱 Cat Popup Logic */
+            const rewardDialog = document.getElementById('reward-dialog');
+            const catPhoto = document.getElementById('cat-photo');
+            const catQuote = document.getElementById('cat-quote');
+            const doneButtons = document.querySelectorAll('form[action^="/update_task"]');
+
+            const catRewards = [
+                // --- THIS IS THE FIX ---
+                // Use simple static paths, not Jinja2
+                { img: "/static/puddingCat.png", quote: "You've earned your cozy spot! Have some pudding and relax." },
+                { img: "/static/matchaCat.png", quote: "Here's some matcha for the task you accomplished! Stay purr-sistent." },
+                { img: "/static/muscleCat.png", quote: "Look at you, getting things done! You're clearly very strong. Keep fighting!" },
+                { img: "/static/moneyCat.png", quote: "If you keep this up, you're gonna be the next millionaire! Keep hustling." },
+                { img: "/static/yesYouCat.png", quote: "Yes you, you're brilliant and amazing! Keep shining." },
+                { img: "/static/flowerCat.png", quote: "Here are some flowers for getting that done! You're paws-itively amazing." },
+                { img: "/static/cookieCat.png", quote: "Here's a cookie for our pookie! You deserve a treat for your hard work." }
+            ];
+
+            doneButtons.forEach(form => {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+
+                    const randomReward = catRewards[Math.floor(Math.random() * catRewards.length)];
+                    catPhoto.src = randomReward.img;
+                    catQuote.textContent = randomReward.quote;
+
+                    rewardDialog.showModal();
+
+                    rewardDialog.addEventListener('close', () => {
+                        form.submit();
+                    }, { once: true });
+                });
+            });
+        });
+    </script>
+{% endblock %}

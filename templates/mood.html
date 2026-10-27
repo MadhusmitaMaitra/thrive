@@ -1,0 +1,99 @@
+{% extends "layout.html" %}
+
+{% block body_class %}home-page{% endblock %}
+
+{% block body %}
+    <nav style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 class="page-heading">How are you feeling?</h2>
+        <div>
+            <a class="nes-btn" href="/">Back to Home</a>
+            <a class="nes-btn" href="/logout">Logout</a>
+        </div>
+    </nav>
+    
+    <div class="nes-container with-title is-centered">
+        <p class="title">Log Your Mood</p>
+        <form action="/mood" method="post">
+            
+            <p>Please select one:</p>
+            <div style="display: flex; justify-content: center; gap: 1rem; margin-bottom: 1.5rem; font-size: 2rem;">
+                <label>
+                    <input type="radio" class="nes-radio" name="mood" value="happy" checked />
+                    <span>😊</span>
+                </label>
+                <label>
+                    <input type="radio" class="nes-radio" name="mood" value="calm" />
+                    <span>😌</span>
+                </label>
+                <label>
+                    <input type="radio" class="nes-radio" name="mood" value="tired" />
+                    <span>😴</span>
+                </label>
+                <label>
+                    <input type="radio" class="nes-radio" name="mood" value="anxious" />
+                    <span>😟</span>
+                </label>
+                <label>
+                    <input type="radio" class="nes-radio" name="mood" value="sad" />
+                    <span>😢</span>
+                </label>
+            </div>
+
+            <div class="nes-field">
+                <label for="note_field">Any thoughts to add? (Optional)</label>
+                <textarea id="note_field" name="note" class="nes-textarea" placeholder="Today was tough because..."></textarea>
+            </div>
+
+            <button type="submit" class="nes-btn is-primary" style="margin-top: 1rem;">Save Mood</button>
+        </form>
+    </div>
+
+    <section style="margin-top: 2rem;">
+        <div class="nes-container with-title">
+            <p class="title">Past Reflections</p>
+            
+            {% for entry in entries %}
+                <details class="nes-container is-dark reflection-dropdown">
+                    <summary class="reflection-summary">
+                        <span>
+                            <strong>Mood:</strong> {{ entry.mood.capitalize() }}
+                            <span style="font-size: 0.8rem; margin-left: 1rem;">({{ entry.logged_at }})</span>
+                        </span>
+                    </summary>
+                    
+                    <div class="reflection-content">
+                        <p style="margin-top: 0.5rem; line-height: 1.5;">{{ entry.note }}</p>
+                        
+                        <form action="/delete_reflection/{{ entry.id }}" method="post" style="text-align: right; margin-top: 1rem;">
+                            <button type="submit" class="nes-btn is-error is-small">Delete</button>
+                        </form>
+                    </div>
+                </details>
+            {% else %}
+                <p>You haven't saved any thoughts yet. Your past reflections will appear here.</p>
+            {% endfor %}
+            
+        </div>
+    </section>
+
+{% endblock %}
+
+{% block animations %}
+    <div id="stars-container-js"></div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // --- Star Animation Script ---
+            const starContainer = document.getElementById('stars-container-js');
+            if (starContainer) {
+                for (let i = 0; i < 20; i++) {
+                    const star = document.createElement('div');
+                    star.className = 'star';
+                    star.style.left = Math.random() * 100 + 'vw';
+                    star.style.animationDuration = (Math.random() * 10 + 5) + 's';
+                    star.style.animationDelay = Math.random() * 5 + 's';
+                    starContainer.appendChild(star);
+                }
+            }
+        });
+    </script>
+{% endblock %}
